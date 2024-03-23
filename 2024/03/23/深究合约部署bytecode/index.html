@@ -22,13 +22,13 @@
 
   <meta name="description" content="在进行区块链浏览器功能—合约验证的时候，深度研究了编译合约的字节码。  bytecode 一般说的 bytecode 通常指 creation bytecode ，包含 init + runtime bytecode   这里的 init 指的是构造函数等信息  runtime bytecode 指合约部署到区块链网络上后的一些指令集   部署合约 inputdate : 指 creation b">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Init">
+<meta property="og:title" content="合约部署之字节码">
 <meta property="og:url" content="http://example.com/2024/03/23/%E6%B7%B1%E7%A9%B6%E5%90%88%E7%BA%A6%E9%83%A8%E7%BD%B2bytecode/index.html">
 <meta property="og:site_name" content="GiaoBear Blog">
 <meta property="og:description" content="在进行区块链浏览器功能—合约验证的时候，深度研究了编译合约的字节码。  bytecode 一般说的 bytecode 通常指 creation bytecode ，包含 init + runtime bytecode   这里的 init 指的是构造函数等信息  runtime bytecode 指合约部署到区块链网络上后的一些指令集   部署合约 inputdate : 指 creation b">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-03-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-03-22T18:36:45.690Z">
+<meta property="article:modified_time" content="2024-03-23T17:27:02.808Z">
 <meta property="article:author" content="GiaoBear">
 <meta name="twitter:card" content="summary">
 
@@ -45,7 +45,7 @@
   };
 </script>
 
-  <title>Init | GiaoBear Blog</title>
+  <title>合约部署之字节码 | GiaoBear Blog</title>
   
 
 
@@ -164,7 +164,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Init
+          合约部署之字节码
         </h1>
 
         <div class="post-meta">
@@ -173,10 +173,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2024-03-23 00:00:00 / 修改时间：02:36:45" itemprop="dateCreated datePublished" datetime="2024-03-23T00:00:00+08:00">2024-03-23</time>
+              <time title="创建时间：2024-03-23 00:00:00" itemprop="dateCreated datePublished" datetime="2024-03-23T00:00:00+08:00">2024-03-23</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-03-24 01:27:02" itemprop="dateModified" datetime="2024-03-24T01:27:02+08:00">2024-03-24</time>
+              </span>
 
           
 
@@ -200,6 +206,11 @@
 <blockquote>
 <p>部署合约 inputdate : 指 creation bytecode + 元数据信息 ，可以使用codeat函数获取</p>
 </blockquote>
+<h3 id="编译合约"><a href="#编译合约" class="headerlink" title="编译合约"></a>编译合约</h3><pre><code>这里使用 solc 命令行编译工具
+</code></pre>
+<h4 id="compile-type"><a href="#compile-type" class="headerlink" title="compile type"></a>compile type</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">single file : solc --evm-version &lt;VERSION&gt; --bin-runtiem contract.sol</span><br><span class="line">multi-part files : </span><br><span class="line">standard-json input : solc --evm-version &lt;VERSION&gt; --standard-json eth__.json &gt; out.json (不支持直接生成bytecode)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">jsonData, err := ioutil.ReadFile(&quot;out.json&quot;)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        log.Fatal(&quot;无法读取JSON文件:&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 解析JSON数据</span><br><span class="line">    var contractData ContractRuntimeBytecode</span><br><span class="line">    err = json.Unmarshal(jsonData, &amp;contractData)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        log.Fatal(&quot;解析JSON数据时出错:&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 提取EVM运行时字节码</span><br><span class="line">    runtimeBytecode := contractData.EVM.Bytecode.Object</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -277,6 +288,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%90%88%E7%BA%A6"><span class="nav-number">1.</span> <span class="nav-text">编译合约</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#compile-type"><span class="nav-number">1.1.</span> <span class="nav-text">compile type</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
